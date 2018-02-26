@@ -32,17 +32,24 @@ class Api::V1::UsersController < ApplicationController
   end
 
   def show
-    debugger
+    encrypted_user_id = params["jwt"]
+    user_id = JWT.decode(encrypted_user_id, ENV["MY_SECRET"], ENV["EGGS"])
+    @user = User.find_by(id: user_id[0]["user_id"])
+
+    render json: user_events(@user)
   end
 
   private
+
+  def user_events(user)
+    {userEvents: user.get_user_events}
+  end
 
   def user_with_token_and_artists(user)
     payload = {user_id: user.id}
     jwt = issue_token(payload)
     serialized_user = UserSerializer.new(user).attributes
     {currentUser: serialized_user, code: jwt}
-    # userEvents: @user.get_user_events
   end
 
   def user_params(user_data)
