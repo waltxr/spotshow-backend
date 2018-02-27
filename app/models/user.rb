@@ -7,7 +7,7 @@ class User < ApplicationRecord
     events = []
       self.artists.each do |artist|
         artist.events.each do |event|
-          events << event
+          events << EventSerializer.new(event)        
         end
       end
     return events

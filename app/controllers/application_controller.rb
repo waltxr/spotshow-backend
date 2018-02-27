@@ -6,11 +6,11 @@ class ApplicationController < ActionController::API
   private
 
   def issue_token(payload)
-    JWT.encode(payload, ENV["MY_SECRET"], ENV["EGGS"])
+    JWT.encode(payload, ENV["MY_SECRET"], ENV["ALG"])
   end
 
   def decode(jwt_token)
-    my_algorithm = { algorithm: ENV["EGGS"]}
+    my_algorithm = { algorithm: ENV["ALG"]}
     JWT.decode(jwt_token, ENV["MY_SECRET"], true, my_algorithm)[0]
   end
 
@@ -55,5 +55,5 @@ class ApplicationController < ActionController::API
       my_user.update(access_token: encodedAccess)
     end
   end
-  
+
 end

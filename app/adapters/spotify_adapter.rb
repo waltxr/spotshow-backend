@@ -44,6 +44,7 @@ class SpotifyAdapter
   end
 
   def self.get_user_saved_albums(access_token, offset)
+
     header = {
       Authorization: "Bearer #{access_token}"
     }
@@ -61,6 +62,17 @@ class SpotifyAdapter
     spotify_response = RestClient.get('https://api.spotify.com/v1/me/albums', header)
 
     JSON.parse(spotify_response.body)['total']
+  end
+
+  def self.get_artist_image(spot_id, access_token)
+
+    header = {
+      Authorization: "Bearer #{access_token}"
+    }
+
+    spotify_response = RestClient.get("https://api.spotify.com/v1/artists/#{spot_id}", header)
+
+    JSON.parse(spotify_response.body)['images']
   end
 
 end
