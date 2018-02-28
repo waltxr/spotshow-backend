@@ -5,39 +5,48 @@ class Api::V1::UsersController < ApplicationController
     auth_params = SpotifyAdapter.get_auth_params(params[:code])
     user_data = SpotifyAdapter.get_user_data(auth_params["access_token"])
 
-    @user = User.find_or_create_by(user_params(user_data))
+    if User.exists?(username: user_params(user_data)[:username])
 
-    encodedAccess = issue_token({token: auth_params["access_token"]})
-    encodedRefresh = issue_token({token: auth_params["refresh_token"]})
+      @user = User.find_by(username: user_params(user_data)[:username])
 
-    number_of_saved_artists = SpotifyAdapter.number_of_saved_albums(auth_params["access_token"])
+      render json: user_with_token_and_artists(@user)
+    else
 
-    offset = 0
+      @user = User.find_or_create_by(user_params(user_data))
 
-    while offset < number_of_saved_artists
+      encodedAccess = issue_token({token: auth_params["access_token"]})
+      encodedRefresh = issue_token({token: auth_params["refresh_token"]})
 
-      user_artists = SpotifyAdapter.get_user_saved_albums(auth_params["access_token"], offset)
+      number_of_saved_artists = SpotifyAdapter.number_of_saved_albums(auth_params["access_token"])
 
-      user_artists['items'].each do |item|
+      offset = 0
 
-        artist = Artist.find_or_create_by(name: item['album']['artists'].first['name'])
-        # getting images
-        artist.update(spot_id: item['album']['artists'].first['id'])
+      while offset < number_of_saved_artists
 
-        artist_image_url = SpotifyAdapter.get_artist_image(artist.spot_id, auth_params["access_token"])
-        if artist_image_url.first
-          artist.update(image_url: artist_image_url.first['url'])
+        user_artists = SpotifyAdapter.get_user_saved_albums(auth_params["access_token"], offset)
+
+        user_artists['items'].each do |item|
+
+          artist = Artist.find_or_create_by(name: item['album']['artists'].first['name'])
+          # getting images
+          artist.update(spot_id: item['album']['artists'].first['id'])
+
+          artist_image_url = SpotifyAdapter.get_artist_image(artist.spot_id, auth_params["access_token"])
+          if artist_image_url.first
+            artist.update(image_url: artist_image_url.first['url'])
+          end
+
+          user_artists = UserArtist.find_or_create_by(user_id: @user.id, artist_id: artist.id)
         end
 
-        user_artists = UserArtist.find_or_create_by(user_id: @user.id, artist_id: artist.id)
+        offset += 20
       end
 
-      offset += 20
+      @user.update(access_token: encodedAccess, refresh_token: encodedRefresh)
+
+      render json: user_with_token_and_artists(@user)
+
     end
-
-    @user.update(access_token: encodedAccess, refresh_token: encodedRefresh)
-
-    render json: user_with_token_and_artists(@user)
   end
 
   def show
