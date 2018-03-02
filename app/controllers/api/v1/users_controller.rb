@@ -12,7 +12,7 @@ class Api::V1::UsersController < ApplicationController
       render json: user_with_token_and_artists(@user)
     else
 
-      @user = User.find_or_create_by(user_params(user_data))
+      @user = User.create(user_params(user_data))
 
       encodedAccess = issue_token({token: auth_params["access_token"]})
       encodedRefresh = issue_token({token: auth_params["refresh_token"]})
