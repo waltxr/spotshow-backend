@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       post 'favorite_venues', to: 'user_venues#create'
       post 'get_favorite_venues', to: 'user_venues#show'
       delete 'favorite_venues/:id', to: 'user_venues#destroy'
+      post 'get_user', to: 'logins#show'
     end
   end
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
