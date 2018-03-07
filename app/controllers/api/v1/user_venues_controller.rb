@@ -9,7 +9,7 @@ class Api::V1::UserVenuesController < ApplicationController
     venue = Venue.find(params["user_venue"]["id"])
     @user.add_favorite_venue(venue)
 
-    render json: @user
+    render json: @user.favorite_venues
   end
 
   def show
@@ -30,5 +30,5 @@ class Api::V1::UserVenuesController < ApplicationController
 
     render json: @user.favorite_venues
   end
-  
+
 end
