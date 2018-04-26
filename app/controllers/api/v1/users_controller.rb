@@ -53,15 +53,10 @@ class Api::V1::UsersController < ApplicationController
     encrypted_user_id = params["jwt"]
     user_id = JWT.decode(encrypted_user_id, ENV["MY_SECRET"], ENV["ALG"])
     @user = User.find_by(id: user_id[0]["user_id"])
-
-    render json: user_events(@user)
+    render json: @user.events
   end
 
   private
-
-  def user_events(user)
-    {userEvents: user.get_user_events}
-  end
 
   def user_with_token_and_artists(user)
     payload = {user_id: user.id}

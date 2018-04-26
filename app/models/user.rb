@@ -4,16 +4,9 @@ class User < ApplicationRecord
   has_many :artists, through: :user_artists
   has_many :user_venues
   has_many :favorite_venues, through: :user_venues, source: 'venue'
+  has_many :artist_events, through: :artists
+  has_many :events, through: :artist_events
 
-  def get_user_events
-    events = []
-      self.artists.each do |artist|
-        artist.events.each do |event|
-          events << EventSerializer.new(event)
-        end
-      end
-    return events
-  end
 
   def access_token_expired?
     # (Time.now - self.updated_at) > ENV["TIME"].to_i
