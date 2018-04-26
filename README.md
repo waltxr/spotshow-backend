@@ -13,10 +13,10 @@ When viewing an artist's page in Spotify you'll notice a list of the artist's sh
 
 ## Installation
 SpotShow was built using Ruby on Rails for the backend and React/Redux for the frontend. To install locally make sure you follow the instructions for the frontend repo located [here](https://github.com/Waltxr/spotshow-frontend). First fork/clone this repo and run:
- `bundle install`
- `rake db:migrate`
- `rake db:seed`
- `rails s`
+ 1. `bundle install`
+ 2. `rake db:migrate`
+ 3. `rake db:seed`
+ 4. `rails s`
 
 ## The Code
 SpotShow was made with a rails API backend and React/Redux frontend. Some highlights:
