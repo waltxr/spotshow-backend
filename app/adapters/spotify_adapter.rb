@@ -49,7 +49,7 @@ class SpotifyAdapter
       Authorization: "Bearer #{access_token}"
     }
 
-    spotify_response = RestClient.get("https://api.spotify.com/v1/me/albums?offset=#{offset}&limit=20", header)
+    spotify_response = RestClient.get("https://api.spotify.com/v1/me/albums?offset=#{offset}&limit=50", header)
 
     JSON.parse(spotify_response.body)
   end
