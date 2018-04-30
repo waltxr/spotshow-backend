@@ -8,10 +8,12 @@ class Api::V1::UsersController < ApplicationController
     encodedRefresh = issue_token({token: auth_params["refresh_token"]})
 
     @user = User.find_or_create_by(user_params(user_data))
-    @user.fetch_spotify_artists(auth_params)
+    # @user.fetch_spotify_artists(auth_params)
     @user.update(access_token: encodedAccess, refresh_token: encodedRefresh)
 
-    render json: user_with_token_and_artists(@user)
+    GetUserArtistsJob.perform_later(@user, auth_params)
+
+    render json: user_with_token(@user)
   end
 
   def show
@@ -23,11 +25,10 @@ class Api::V1::UsersController < ApplicationController
 
   private
 
-  def user_with_token_and_artists(user)
+  def user_with_token(user)
     payload = {user_id: user.id}
     jwt = issue_token(payload)
-    serialized_user = UserSerializer.new(user).attributes
-    {currentUser: serialized_user, code: jwt}
+    {currentUser: user, code: jwt}
   end
 
   def user_params(user_data)
