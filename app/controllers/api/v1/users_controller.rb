@@ -6,11 +6,7 @@ class Api::V1::UsersController < ApplicationController
     user_data = SpotifyAdapter.get_user_data(auth_params["access_token"])
     encodedAccess = issue_token({token: auth_params["access_token"]})
     encodedRefresh = issue_token({token: auth_params["refresh_token"]})
-
     @user = User.find_or_create_by(user_params(user_data))
-    # @user.fetch_spotify_artists(auth_params)
-    @user.update(access_token: encodedAccess, refresh_token: encodedRefresh)
-
     GetUserArtistsJob.perform_later(@user, auth_params)
 
     render json: user_with_token(@user)
@@ -20,7 +16,12 @@ class Api::V1::UsersController < ApplicationController
     encrypted_user_id = params["jwt"]
     user_id = JWT.decode(encrypted_user_id, ENV["MY_SECRET"], ENV["ALG"])
     @user = User.find_by(id: user_id[0]["user_id"])
-    render json: @user.events
+
+
+    render :json => @user, :include => [:events => { :include => { :artists => { :only => :name },
+                                                                   :venue => { :only => :name }}}]
+
+
   end
 
   private
@@ -28,7 +29,7 @@ class Api::V1::UsersController < ApplicationController
   def user_with_token(user)
     payload = {user_id: user.id}
     jwt = issue_token(payload)
-    {currentUser: user, code: jwt}
+    {currentUser: user.username, code: jwt}
   end
 
   def user_params(user_data)
