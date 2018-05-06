@@ -18,10 +18,8 @@ class Api::V1::UsersController < ApplicationController
     @user = User.find_by(id: user_id[0]["user_id"])
 
 
-    render :json => @user, :include => [:events => { :include => { :artists => { :only => :name },
+    render :json => @user, :include => [:events => { :include => { :artists => { :except => [:created_at, :updated_at] },
                                                                    :venue => { :only => :name }}}]
-
-
   end
 
   private
@@ -29,7 +27,7 @@ class Api::V1::UsersController < ApplicationController
   def user_with_token(user)
     payload = {user_id: user.id}
     jwt = issue_token(payload)
-    {currentUser: user.username, code: jwt}
+    {currentUser: user, code: jwt}
   end
 
   def user_params(user_data)
