@@ -6,6 +6,8 @@ Rails.application.routes.draw do
       require 'sidekiq/web'
       mount Sidekiq::Web => "/sidekiq"
 
+      resources :background_jobs, only: [:show]
+
       get 'login', to: 'logins#create'
       post 'dashboard', to: 'users#create'
       post 'events', to: 'users#show'

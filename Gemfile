@@ -12,6 +12,8 @@ gem 'rest-client'
 
 gem 'sidekiq'
 gem 'sinatra', github: 'sinatra/sinatra'
+gem 'active_job_status'
+gem 'redis-rails'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.1.4'

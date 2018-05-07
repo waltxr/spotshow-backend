@@ -1,0 +1,3 @@
+class BackgroundJob < ApplicationRecord
+
+end

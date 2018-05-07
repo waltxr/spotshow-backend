@@ -9,6 +9,7 @@ class User < ApplicationRecord
 
 
   def fetch_spotify_artists(auth_params)
+
     number_of_saved_artists = SpotifyAdapter.number_of_saved_albums(auth_params["access_token"])
 
     offset = 0

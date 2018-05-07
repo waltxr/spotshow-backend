@@ -7,9 +7,13 @@ class Api::V1::UsersController < ApplicationController
     encodedAccess = issue_token({token: auth_params["access_token"]})
     encodedRefresh = issue_token({token: auth_params["refresh_token"]})
     @user = User.find_or_create_by(user_params(user_data))
-    GetUserArtistsJob.perform_later(@user, auth_params)
-
-    render json: user_with_token(@user)
+    queued_job = GetUserArtistsJob.perform_later(@user, auth_params)
+    job = BackgroundJob.create(
+      job_name: 'GetUserArtistsJob',
+      job_uid: queued_job.job_id,
+      status: ActiveJobStatus.fetch(queued_job.job_id).status
+    )
+    render json: user_with_token(@user, job)
   end
 
   def show
@@ -17,17 +21,16 @@ class Api::V1::UsersController < ApplicationController
     user_id = JWT.decode(encrypted_user_id, ENV["MY_SECRET"], ENV["ALG"])
     @user = User.find_by(id: user_id[0]["user_id"])
 
-
     render :json => @user, :include => [:events => { :include => { :artists => { :except => [:created_at, :updated_at] },
                                                                    :venue => { :only => :name }}}]
   end
 
   private
 
-  def user_with_token(user)
+  def user_with_token(user, job)
     payload = {user_id: user.id}
     jwt = issue_token(payload)
-    {currentUser: user, code: jwt}
+    {currentUser: user, code: jwt, job_id: job.id}
   end
 
   def user_params(user_data)

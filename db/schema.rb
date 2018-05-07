@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180302142332) do
+ActiveRecord::Schema.define(version: 20180506191746) do
 
   create_table "artist_events", force: :cascade do |t|
     t.integer "event_id"
@@ -25,6 +25,15 @@ ActiveRecord::Schema.define(version: 20180302142332) do
     t.datetime "updated_at", null: false
     t.string "spot_id"
     t.string "image_url"
+  end
+
+  create_table "background_jobs", force: :cascade do |t|
+    t.string "job_name", limit: 255
+    t.string "job_uid", limit: 255
+    t.integer "status"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text "data", default: "{}"
   end
 
   create_table "events", force: :cascade do |t|
