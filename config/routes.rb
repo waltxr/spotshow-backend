@@ -8,6 +8,7 @@ Rails.application.routes.draw do
 
       resources :background_jobs, only: [:show]
 
+      # get 'background_jobs', to: 'background_jobs#show'
       get 'login', to: 'logins#create'
       post 'dashboard', to: 'users#create'
       post 'events', to: 'users#show'
