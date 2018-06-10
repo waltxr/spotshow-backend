@@ -22,7 +22,7 @@ class Api::V1::UsersController < ApplicationController
     @user = User.find_by(id: user_id[0]["user_id"])
 
     render :json => @user, :include => [:events => { :include => { :artists => { :except => [:created_at, :updated_at] },
-                                                                   :venue => { :only => :name }}}]
+                                                                   :venue => { }}}]
   end
 
   private
